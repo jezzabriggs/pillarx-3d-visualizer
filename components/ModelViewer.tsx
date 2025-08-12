@@ -40,10 +40,10 @@ function Scene({ model, settings }: ModelViewerProps) {
           args={[20, 20]} 
           cellSize={1} 
           cellThickness={0.5} 
-          cellColor="#6b7280" 
+          cellColor="#374151" 
           sectionSize={5} 
           sectionThickness={1} 
-          sectionColor="#9ca3af" 
+          sectionColor="#6b7280" 
           fadeDistance={25} 
           fadeStrength={1} 
           followCamera={false} 
@@ -93,7 +93,7 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
         return (
           <mesh ref={meshRef} castShadow receiveShadow>
             <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial color="#3B82F6" metalness={0.1} roughness={0.2} />
+            <meshStandardMaterial color="#DC2626" metalness={0.1} roughness={0.2} />
           </mesh>
         )
       
@@ -101,7 +101,7 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
         return (
           <mesh ref={meshRef} castShadow receiveShadow>
             <sphereGeometry args={[1.5, 32, 32]} />
-            <meshStandardMaterial color="#10B981" metalness={0.1} roughness={0.1} />
+            <meshStandardMaterial color="#B91C1C" metalness={0.1} roughness={0.1} />
           </mesh>
         )
       
@@ -109,7 +109,7 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
         return (
           <mesh ref={meshRef} castShadow receiveShadow>
             <torusGeometry args={[1.5, 0.5, 16, 32]} />
-            <meshStandardMaterial color="#F59E0B" metalness={0.2} roughness={0.3} />
+            <meshStandardMaterial color="#DC2626" metalness={0.2} roughness={0.3} />
           </mesh>
         )
       
@@ -117,7 +117,7 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
         return (
           <mesh ref={meshRef} castShadow receiveShadow>
             <icosahedronGeometry args={[1.5, 1]} />
-            <meshStandardMaterial color="#8B5CF6" metalness={0.3} roughness={0.4} />
+            <meshStandardMaterial color="#991B1B" metalness={0.3} roughness={0.4} />
           </mesh>
         )
       
@@ -125,7 +125,7 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
         return (
           <mesh ref={meshRef} castShadow receiveShadow>
             <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial color="#3B82F6" metalness={0.1} roughness={0.2} />
+            <meshStandardMaterial color="#DC2626" metalness={0.1} roughness={0.2} />
           </mesh>
         )
     }
@@ -137,9 +137,9 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
 // Loading component
 function Loader() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+    <div className="absolute inset-0 flex items-center justify-center bg-black">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
         <p className="text-gray-300">Loading 3D Scene...</p>
       </div>
     </div>
@@ -166,9 +166,9 @@ export default function ModelViewer({ model, settings }: ModelViewerProps) {
       
       {/* Loading overlay */}
       <Suspense fallback={<Loader />}>
-        <div className="absolute top-4 right-4 bg-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2">
+        <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-red-900">
           <p className="text-sm text-gray-300">
-            Model: <span className="text-white font-medium">{model}</span>
+            Model: <span className="text-red-400 font-medium">{model}</span>
           </p>
         </div>
       </Suspense>

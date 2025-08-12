@@ -44,8 +44,8 @@ export default function ControlPanel({
               onClick={() => onModelChange(model.id)}
               className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
                 selectedModel === model.id
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white'
+                  ? 'border-red-600 bg-red-900/20 text-red-400'
+                  : 'border-gray-700 hover:border-red-800 text-gray-300 hover:text-red-300'
               }`}
             >
               <div className="font-medium">{model.name}</div>
@@ -68,7 +68,7 @@ export default function ControlPanel({
             type="color"
             value={settings.backgroundColor}
             onChange={(e) => onSettingsChange({ backgroundColor: e.target.value })}
-            className="w-full h-10 rounded-lg border border-gray-600 bg-gray-700 cursor-pointer"
+            className="w-full h-10 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer"
           />
         </div>
 
@@ -87,7 +87,7 @@ export default function ControlPanel({
               <button
                 onClick={() => onSettingsChange({ [option.key]: !settings[option.key as keyof typeof settings] })}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-                  settings[option.key as keyof typeof settings] ? 'bg-primary' : 'bg-gray-600'
+                  settings[option.key as keyof typeof settings] ? 'bg-red-600' : 'bg-gray-700'
                 }`}
               >
                 <span

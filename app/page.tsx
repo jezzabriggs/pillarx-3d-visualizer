@@ -9,7 +9,7 @@ import Header from '@/components/Header'
 export default function Home() {
   const [selectedModel, setSelectedModel] = useState<string>('cube')
   const [viewerSettings, setViewerSettings] = useState({
-    backgroundColor: '#1f2937',
+    backgroundColor: '#000000',
     showGrid: true,
     showAxes: true,
     autoRotate: false,
@@ -24,7 +24,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-900">
+    <main className="min-h-screen bg-black">
       <Header />
       
       {/* Hero Section */}
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-800">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <motion.h2 
             className="text-3xl font-bold text-white text-center mb-12"

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 export default function Header() {
   return (
-    <header className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+    <header className="bg-black/80 backdrop-blur-sm border-b border-red-900 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -31,7 +31,7 @@ export default function Header() {
               <motion.a
                 key={item.name}
                 href={item.href}
-                className="text-gray-300 hover:text-white transition-colors duration-200"
+                className="text-gray-400 hover:text-red-400 transition-colors duration-200"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
