@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.9.0",
     "@react-three/drei": "^9.88.13",
     "@react-three/fiber": "^8.15.11",
     "@types/three": "^0.160.0",
+    "firebase": "^12.1.0",
     "framer-motion": "^10.16.5",
     "next": "^14.2.31",
     "react": "^18",
