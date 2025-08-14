@@ -38,7 +38,21 @@ This guide will help you set up Firebase Firestore to store and manage your CAD 
    - Select a location close to your users
    - Click "Enable"
 
-## 🔑 Step 3: Get Firebase Configuration
+## 📁 Step 3: Enable Firebase Storage
+
+1. **Navigate to Storage**
+   - In the left sidebar, click "Storage"
+   - Click "Get started"
+
+2. **Choose Security Rules**
+   - Select "Start in test mode" (for development)
+   - Click "Next"
+
+3. **Choose Location**
+   - Select the same location as your Firestore database
+   - Click "Done"
+
+## 🔑 Step 4: Get Firebase Configuration
 
 1. **Project Settings**
    - Click the gear icon ⚙️ next to "Project Overview"
@@ -64,7 +78,7 @@ This guide will help you set up Firebase Firestore to store and manage your CAD 
    };
    ```
 
-## 📝 Step 4: Configure Environment Variables
+## 📝 Step 5: Configure Environment Variables
 
 1. **Create .env.local file**
    - In your project root, create `.env.local`
@@ -84,7 +98,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
    - Replace all `your_*_here` values with your actual Firebase config
    - Save the file
 
-## 🗄️ Step 5: Set Up Firestore Collections
+## 🗄️ Step 6: Set Up Firestore Collections
 
 1. **Go to Firestore Database**
    - In Firebase console, click "Firestore Database"
@@ -125,7 +139,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
    - `categories` - for geometry categories
    - `tags` - for geometry tags
 
-## 🔒 Step 5: Configure Security Rules
+## 🔒 Step 7: Configure Security Rules
 
 1. **Go to Firestore Rules**
    - In Firestore Database, click "Rules" tab
@@ -163,7 +177,35 @@ service cloud.firestore {
 3. **Publish Rules**
    - Click "Publish"
 
-## 🧪 Step 6: Test Your Setup
+## 📁 Step 8: Configure Storage Security Rules
+
+1. **Go to Storage Rules**
+   - In Storage section, click "Rules" tab
+
+2. **Update Rules**
+   - Replace the default rules with:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow read access to all files
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow write access for now (development)
+    match /{allPaths=**} {
+      allow write: if true;
+    }
+  }
+}
+```
+
+3. **Publish Rules**
+   - Click "Publish"
+
+## 🧪 Step 9: Test Your Setup
 
 1. **Start Development Server**
    ```bash
@@ -178,7 +220,7 @@ service cloud.firestore {
    - Go to Firebase console
    - Check if your geometry appears in the `geometries` collection
 
-## 🚀 Step 7: Deploy to Production
+## 🚀 Step 10: Deploy to Production
 
 1. **Update Security Rules**
    - Modify rules for production use

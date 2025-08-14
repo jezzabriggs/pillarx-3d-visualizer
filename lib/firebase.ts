@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 // Your Firebase configuration
 // Replace these with your actual Firebase project config
@@ -16,6 +17,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 // CAD Geometry Types
 export interface CADGeometry {
@@ -184,6 +186,41 @@ export class GeometryDatabase {
       await this.updateGeometry(id, {
         rating: averageRating
       });
+    }
+  }
+
+  // File Storage Methods
+  async uploadFile(file: File, geometryId: string): Promise<string> {
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    const storageRef = ref(storage, `geometries/${geometryId}/${file.name}`);
+    
+    try {
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw new Error('Failed to upload file');
+    }
+  }
+
+  async deleteFile(fileUrl: string): Promise<void> {
+    try {
+      const fileRef = ref(storage, fileUrl);
+      await deleteObject(fileRef);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      throw new Error('Failed to delete file');
+    }
+  }
+
+  async getFileDownloadURL(filePath: string): Promise<string> {
+    try {
+      const fileRef = ref(storage, filePath);
+      return await getDownloadURL(fileRef);
+    } catch (error) {
+      console.error('Error getting download URL:', error);
+      throw new Error('Failed to get file URL');
     }
   }
 }

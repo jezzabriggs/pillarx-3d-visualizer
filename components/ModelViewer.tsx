@@ -13,10 +13,11 @@ interface ModelViewerProps {
     showAxes: boolean
     autoRotate: boolean
   }
+  customGeometry?: any // Add support for custom geometries
 }
 
 // Scene component that handles the 3D scene setup
-function Scene({ model, settings }: ModelViewerProps) {
+function Scene({ model, settings, customGeometry }: ModelViewerProps) {
   const { scene } = useThree()
   
   useEffect(() => {
@@ -40,7 +41,7 @@ function Scene({ model, settings }: ModelViewerProps) {
           args={[20, 20]} 
           cellSize={1} 
           cellThickness={0.5} 
-          cellColor="#374151" 
+          cellColor="#9ca3af" 
           sectionSize={5} 
           sectionThickness={1} 
           sectionColor="#6b7280" 
@@ -57,7 +58,7 @@ function Scene({ model, settings }: ModelViewerProps) {
       )}
       
       {/* 3D Models */}
-      <ModelSelector model={model} autoRotate={settings.autoRotate} />
+      <ModelSelector model={model} autoRotate={settings.autoRotate} customGeometry={customGeometry} />
       
       {/* Orbit Controls */}
       <OrbitControls 
@@ -71,14 +72,13 @@ function Scene({ model, settings }: ModelViewerProps) {
         target={[0, 0, 0]}
       />
       
-      {/* Performance Stats */}
-      <Stats />
+      {/* Performance Stats - Removed FPS counter */}
     </>
   )
 }
 
 // Component that renders different 3D models based on selection
-function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boolean }) {
+function ModelSelector({ model, autoRotate, customGeometry }: { model: string; autoRotate: boolean; customGeometry?: any }) {
   const meshRef = useRef<THREE.Mesh>(null)
   
   useFrame((state) => {
@@ -88,47 +88,27 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
   })
 
   const renderModel = () => {
-    switch (model) {
-      case 'cube':
-        return (
-          <mesh ref={meshRef} castShadow receiveShadow>
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial color="#DC2626" metalness={0.1} roughness={0.2} />
-          </mesh>
-        )
-      
-      case 'sphere':
-        return (
-          <mesh ref={meshRef} castShadow receiveShadow>
-            <sphereGeometry args={[1.5, 32, 32]} />
-            <meshStandardMaterial color="#B91C1C" metalness={0.1} roughness={0.1} />
-          </mesh>
-        )
-      
-      case 'torus':
-        return (
-          <mesh ref={meshRef} castShadow receiveShadow>
-            <torusGeometry args={[1.5, 0.5, 16, 32]} />
-            <meshStandardMaterial color="#DC2626" metalness={0.2} roughness={0.3} />
-          </mesh>
-        )
-      
-      case 'icosahedron':
-        return (
-          <mesh ref={meshRef} castShadow receiveShadow>
-            <icosahedronGeometry args={[1.5, 1]} />
-            <meshStandardMaterial color="#991B1B" metalness={0.3} roughness={0.4} />
-          </mesh>
-        )
-      
-      default:
-        return (
-          <mesh ref={meshRef} castShadow receiveShadow>
-            <boxGeometry args={[2, 2, 2]} />
-            <meshStandardMaterial color="#DC2626" metalness={0.1} roughness={0.2} />
-          </mesh>
-        )
+    // If we have a custom geometry, render it
+    if (customGeometry && model === 'custom') {
+      return (
+        <mesh ref={meshRef} castShadow receiveShadow>
+          <boxGeometry args={[2, 2, 2]} />
+          <meshStandardMaterial 
+            color={customGeometry.material?.color || "#DC2626"} 
+            metalness={customGeometry.material?.metalness || 0.1} 
+            roughness={customGeometry.material?.roughness || 0.2} 
+          />
+        </mesh>
+      )
     }
+    
+    // Default fallback - show a placeholder when no custom geometry is selected
+    return (
+      <mesh ref={meshRef} castShadow receiveShadow>
+        <boxGeometry args={[2, 2, 2]} />
+        <meshStandardMaterial color="#6b7280" metalness={0.1} roughness={0.8} />
+      </mesh>
+    )
   }
 
   return renderModel()
@@ -137,17 +117,17 @@ function ModelSelector({ model, autoRotate }: { model: string; autoRotate: boole
 // Loading component
 function Loader() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black">
+    <div className="absolute inset-0 flex items-center justify-center bg-white">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-        <p className="text-gray-300">Loading 3D Scene...</p>
+        <p className="text-gray-600">Loading 3D Scene...</p>
       </div>
     </div>
   )
 }
 
 // Main ModelViewer component
-export default function ModelViewer({ model, settings }: ModelViewerProps) {
+export default function ModelViewer({ model, settings, customGeometry }: ModelViewerProps) {
   return (
     <div className="w-full h-full relative">
       <Canvas
@@ -160,15 +140,15 @@ export default function ModelViewer({ model, settings }: ModelViewerProps) {
         }}
       >
         <Suspense fallback={null}>
-          <Scene model={model} settings={settings} />
+          <Scene model={model} settings={settings} customGeometry={customGeometry} />
         </Suspense>
       </Canvas>
       
       {/* Loading overlay */}
       <Suspense fallback={<Loader />}>
-        <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-red-900">
-          <p className="text-sm text-gray-300">
-            Model: <span className="text-red-400 font-medium">{model}</span>
+        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-red-200 shadow-sm">
+          <p className="text-sm text-gray-700">
+            Model: <span className="text-red-600 font-medium">{model}</span>
           </p>
         </div>
       </Suspense>
