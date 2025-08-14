@@ -55,11 +55,11 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
 
   const handleFileSelect = (file: File) => {
     // Check file type
-    const allowedTypes = ['.stp', '.obj', '.fbx', '.stl']
+    const allowedTypes = ['.stp', '.step', '.obj', '.fbx', '.stl']
     const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'))
     
     if (!allowedTypes.includes(fileExtension)) {
-      alert('Please select a valid 3D model file (.stp, .obj, .fbx, .stl)')
+      alert('Please select a valid 3D model file (.stp, .step, .obj, .fbx, .stl)')
       return
     }
 
@@ -363,7 +363,7 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".stp,.obj,.fbx,.stl"
+        accept=".stp,.step,.obj,.fbx,.stl"
         onChange={(e) => e.target.files && e.target.files[0] && handleFileSelect(e.target.files[0])}
         className="hidden"
       />
@@ -382,7 +382,7 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
         <div className="text-4xl mb-4">📁</div>
         <p className="text-white text-lg mb-2">Drop your 3D model here</p>
         <p className="text-gray-400 mb-4">
-          Supports: STP, OBJ, FBX, STL
+          Supports: STP, STEP, OBJ, FBX, STL
         </p>
         <button
           onClick={openFileDialog}
@@ -397,9 +397,9 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
         <h4 className="text-white font-medium mb-2">Upload Requirements:</h4>
         <ul className="text-gray-400 text-sm space-y-1">
           <li>• Maximum file size: 50MB</li>
-          <li>• Supported formats: STP, OBJ, FBX, STL</li>
+          <li>• Supported formats: STP, STEP, OBJ, FBX, STL</li>
           <li>• All metadata fields are required</li>
-          <li>• For best results, use STP or STL formats</li>
+          <li>• For best results, use STP, STEP, or STL formats</li>
         </ul>
       </div>
     </div>
