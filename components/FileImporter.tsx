@@ -54,12 +54,12 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
   }
 
   const handleFileSelect = (file: File) => {
-    // Check file type
-    const allowedTypes = ['.stp', '.step', '.obj', '.fbx', '.stl']
+    // Check file type - only accept web-viewable formats
+    const allowedTypes = ['.obj', '.fbx', '.stl', '.gltf', '.glb']
     const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'))
     
     if (!allowedTypes.includes(fileExtension)) {
-      alert('Please select a valid 3D model file (.stp, .step, .obj, .fbx, .stl)')
+      alert('Please select a web-viewable 3D model file (.obj, .fbx, .stl, .gltf, .glb).\n\nCAD files (.step, .stp, .iges) need to be converted first using tools like FreeCAD or Blender.')
       return
     }
 
@@ -363,7 +363,7 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".stp,.step,.obj,.fbx,.stl"
+        accept=".obj,.fbx,.stl,.gltf,.glb"
         onChange={(e) => e.target.files && e.target.files[0] && handleFileSelect(e.target.files[0])}
         className="hidden"
       />
@@ -382,7 +382,7 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
         <div className="text-4xl mb-4">📁</div>
         <p className="text-white text-lg mb-2">Drop your 3D model here</p>
         <p className="text-gray-400 mb-4">
-          Supports: STP, STEP, OBJ, FBX, STL
+          Supports: OBJ, FBX, STL, GLTF, GLB
         </p>
         <button
           onClick={openFileDialog}
@@ -397,9 +397,22 @@ export default function FileImporter({ onImportComplete }: FileImporterProps) {
         <h4 className="text-white font-medium mb-2">Upload Requirements:</h4>
         <ul className="text-gray-400 text-sm space-y-1">
           <li>• Maximum file size: 50MB</li>
-          <li>• Supported formats: STP, STEP, OBJ, FBX, STL</li>
+          <li>• Supported formats: OBJ, FBX, STL, GLTF, GLB</li>
           <li>• All metadata fields are required</li>
-          <li>• For best results, use STP, STEP, or STL formats</li>
+          <li>• For best results, use GLTF or OBJ formats</li>
+        </ul>
+      </div>
+
+      {/* CAD Conversion Guide */}
+      <div className="mt-4 p-4 bg-blue-900/20 rounded-lg border border-blue-700/30">
+        <h4 className="text-blue-300 font-medium mb-2">💡 Have a CAD file (.step, .stp)?</h4>
+        <p className="text-blue-200 text-sm mb-3">
+          CAD files need to be converted to web-viewable formats before upload. Here are free options:
+        </p>
+        <ul className="text-blue-200 text-sm space-y-1">
+          <li>• <strong>FreeCAD</strong> (Free): Open .step file → Export as .gltf or .obj</li>
+          <li>• <strong>Blender</strong> (Free): Import .step → Export as .gltf or .obj</li>
+          <li>• <strong>Online converters</strong>: CloudConvert, Convertio (limited free)</li>
         </ul>
       </div>
     </div>

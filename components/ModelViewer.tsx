@@ -1,9 +1,11 @@
 'use client'
 
-import { Suspense, useRef, useEffect } from 'react'
+import { Suspense, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Grid, Environment, Stats } from '@react-three/drei'
+import { OrbitControls, Grid, Environment, Stats, Html } from '@react-three/drei'
 import * as THREE from 'three'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 interface ModelViewerProps {
   model: string
@@ -77,37 +79,184 @@ function Scene({ model, settings, customGeometry }: ModelViewerProps) {
   )
 }
 
+
+
 // Component that renders different 3D models based on selection
 function ModelSelector({ model, autoRotate, customGeometry }: { model: string; autoRotate: boolean; customGeometry?: any }) {
-  const meshRef = useRef<THREE.Mesh>(null)
+  const [loadedModel, setLoadedModel] = useState<THREE.Group | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   useFrame((state) => {
-    if (meshRef.current && autoRotate) {
-      meshRef.current.rotation.y += 0.01
+    if (loadedModel && autoRotate) {
+      loadedModel.rotation.y += 0.01
     }
   })
+
+  // Load custom geometry file
+  useEffect(() => {
+    if (customGeometry && model === 'custom' && customGeometry.fileUrl) {
+      console.log('🔄 Loading custom geometry:', customGeometry.name)
+      console.log('📁 File URL:', customGeometry.fileUrl)
+      console.log('📋 File type:', customGeometry.parameters?.fileType)
+      
+      setLoading(true)
+      setError(null)
+      
+      // Load the 3D file based on its type
+      const loadFile = async () => {
+        try {
+          if (customGeometry.parameters?.fileType === '.obj') {
+            console.log('📥 Loading OBJ file...')
+            const loader = new OBJLoader()
+            const object = await loader.loadAsync(customGeometry.fileUrl)
+            
+            // Center and scale the model
+            const box = new THREE.Box3().setFromObject(object)
+            const center = box.getCenter(new THREE.Vector3())
+            const size = box.getSize(new THREE.Vector3())
+            const maxDim = Math.max(size.x, size.y, size.z)
+            
+            // More aggressive scaling to make model visible
+            const scale = 8 / maxDim // Increased from 4 to 8 for better visibility
+            
+            // Reset object transformations
+            object.position.set(0, 0, 0)
+            object.rotation.set(0, 0, 0)
+            object.scale.setScalar(scale)
+            
+            // Center the model by moving it to origin
+            object.position.sub(center.multiplyScalar(scale))
+            
+            // Add some debugging
+            console.log('📏 Model dimensions:', size)
+            console.log('🎯 Model center:', center)
+            console.log('📐 Applied scale:', scale)
+            console.log('📍 Final position:', object.position)
+            
+            // Fallback: if model is still too small, force a minimum scale
+            if (scale < 0.1) {
+              console.log('⚠️ Model too small, applying fallback scale')
+              object.scale.setScalar(1)
+              object.position.set(0, 0, 0)
+            }
+            
+            setLoadedModel(object)
+            console.log('✅ OBJ file loaded successfully')
+            
+          } else if (customGeometry.parameters?.fileType === '.gltf' || customGeometry.parameters?.fileType === '.glb') {
+            console.log('📥 Loading GLTF/GLB file...')
+            const loader = new GLTFLoader()
+            const gltf = await loader.loadAsync(customGeometry.fileUrl)
+            
+            const object = gltf.scene
+            
+            // Center and scale the model
+            const box = new THREE.Box3().setFromObject(object)
+            const center = box.getCenter(new THREE.Vector3())
+            const size = box.getSize(new THREE.Vector3())
+            const maxDim = Math.max(size.x, size.y, size.z)
+            
+            // More aggressive scaling to make model visible
+            const scale = 8 / maxDim // Increased from 4 to 8 for better visibility
+            
+            // Reset object transformations
+            object.position.set(0, 0, 0)
+            object.rotation.set(0, 0, 0)
+            object.scale.setScalar(scale)
+            
+            // Center the model by moving it to origin
+            object.position.sub(center.multiplyScalar(scale))
+            
+            // Add some debugging
+            console.log('📏 Model dimensions:', size)
+            console.log('🎯 Model center:', center)
+            console.log('📐 Applied scale:', scale)
+            console.log('📍 Final position:', object.position)
+            
+            // Fallback: if model is still too small, force a minimum scale
+            if (scale < 0.1) {
+              console.log('⚠️ Model too small, applying fallback scale')
+              object.scale.setScalar(1)
+              object.position.set(0, 0, 0)
+            }
+            
+            setLoadedModel(object)
+            console.log('✅ GLTF/GLB file loaded successfully')
+            
+          } else {
+            setError(`File type ${customGeometry.parameters?.fileType} is not yet supported. Currently showing placeholder.`)
+          }
+        } catch (err) {
+          console.error('Error loading 3D file:', err)
+          setError('Failed to load 3D file. Showing placeholder.')
+        } finally {
+          setLoading(false)
+        }
+      }
+      
+      loadFile()
+    }
+  }, [customGeometry, model])
 
   const renderModel = () => {
     // If we have a custom geometry, render it
     if (customGeometry && model === 'custom') {
+      if (loading) {
+        return (
+          <group>
+            {/* Loading message only - no placeholder geometry */}
+            <Html position={[0, 0, 0]} center>
+              <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded text-sm max-w-xs text-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                Loading {customGeometry.name}...
+              </div>
+            </Html>
+          </group>
+        )
+      }
+      
+      if (error) {
+        return (
+          <group>
+            {/* Error message only - no placeholder geometry */}
+            <Html position={[0, 0, 0]} center>
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm max-w-xs text-center">
+                <strong>❌ Error Loading {customGeometry.name}</strong><br/>
+                <span className="text-xs text-red-600">{error}</span>
+              </div>
+            </Html>
+          </group>
+        )
+      }
+      
+      if (loadedModel) {
+        return <primitive object={loadedModel} />
+      }
+      
+      // No model loaded and no error - show error message
       return (
-        <mesh ref={meshRef} castShadow receiveShadow>
-          <boxGeometry args={[2, 2, 2]} />
-          <meshStandardMaterial 
-            color={customGeometry.material?.color || "#DC2626"} 
-            metalness={customGeometry.material?.metalness || 0.1} 
-            roughness={customGeometry.material?.roughness || 0.2} 
-          />
-        </mesh>
+        <group>
+          <Html position={[0, 0, 0]} center>
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded text-sm max-w-xs text-center">
+              <strong>⚠️ No 3D Model Available</strong><br/>
+              <span className="text-xs text-yellow-600">Unable to load {customGeometry.name}</span>
+            </div>
+          </Html>
+        </group>
       )
     }
     
-    // Default fallback - show a placeholder when no custom geometry is selected
+    // Default fallback - show message when no custom geometry is selected
     return (
-      <mesh ref={meshRef} castShadow receiveShadow>
-        <boxGeometry args={[2, 2, 2]} />
-        <meshStandardMaterial color="#6b7280" metalness={0.1} roughness={0.8} />
-      </mesh>
+      <group>
+        <Html position={[0, 0, 0]} center>
+          <div className="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-2 rounded text-sm max-w-xs text-center">
+            <strong>📋 Select a Model</strong><br/>
+            <span className="text-xs text-gray-600">Choose a model type from the dropdown above</span>
+          </div>
+        </Html>
+      </group>
     )
   }
 
